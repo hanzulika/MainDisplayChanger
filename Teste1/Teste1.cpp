@@ -11,24 +11,30 @@ BOOL CALLBACK MyInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonit
 {
 	MONITORINFOEX mi;
 	mi.cbSize = sizeof(mi);
-	GetMonitorInfo(hMonitor, &mi);
-
-	DEVMODE dm;
-	ZeroMemory(&dm, sizeof(dm));
-	dm.dmSize = sizeof(dm);
-
-	if (EnumDisplaySettings(mi.szDevice, ENUM_CURRENT_SETTINGS, &dm))
+	if(GetMonitorInfo(hMonitor, &mi))
 	{
-		std::cout << "Monitor: " << mi.szDevice << std::endl;
-		std::cout << "Height: " << dm.dmPelsHeight << std::endl;
-		std::cout << "Width: " << dm.dmPelsWidth << std::endl;
-	}
+		DEVMODE dm;
+		ZeroMemory(&dm, sizeof(dm));
+		dm.dmSize = sizeof(dm);
 
-	if (hdcMonitor != NULL)
-	{
-		DeleteDC(hdcMonitor);
+		if (EnumDisplaySettings(mi.szDevice, ENUM_CURRENT_SETTINGS, &dm))
+		{
+			std::wcout << "Monitor: " << mi.szDevice << std::endl;
+			std::cout << "Height: " << dm.dmPelsHeight << std::endl;
+			std::cout << "Width: " << dm.dmPelsWidth << std::endl;
+			std::cout << "Refresh Rate: " << dm.dmDisplayFrequency << "Hz" << std::endl;
+		}
+
+		if (hdcMonitor != NULL)
+		{
+			DeleteDC(hdcMonitor);
+		}
+		return TRUE;
 	}
-	return TRUE;
+	else
+	{
+		std::cout << "No monitors found" << std::endl;
+	}	
 }
 
 int main()
